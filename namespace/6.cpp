@@ -1,4 +1,7 @@
-class Printer {
+#include <iostream>
+#include <cstddef>
+	
+		class Printer {
     static int count;
 public:
     static Printer* create() {

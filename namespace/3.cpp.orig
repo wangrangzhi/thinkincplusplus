@@ -1,0 +1,18 @@
+#include <iostream>
+#include <cassert>
+
+class Monitor1{
+	int count;
+	public:
+		Monitor1(){
+			count = 0;
+		}
+		void incident(){
+			++count;
+		}
+}
+
+
+int main(){
+	using namespace std;
+}
