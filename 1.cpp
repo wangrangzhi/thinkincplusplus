@@ -2,25 +2,32 @@
 #include <vector>
 using namespace std;
 
-class Counted {
-    int id;
-    static int count;
+class Rock {
 public:
-    Counted() : id(count++) {
-        cout << "Creating Counted(" << id << ")\n";
+    Rock() {
+        cout << "Rock()\n";
     }
-    ~Counted() {
-        cout << "Destroying Counted(" << id << ")\n";
+    Rock(const Rock&) {
+        cout << "Rock(const Rock&)\n";
     }
-    void f() {
-        cout << "Hi! I'm #" << id << endl;
+    Rock& operator=(const Rock&) {
+        cout << "Rock()\n";
+        return *this;
     }
+    ~Rock() {cout << "~Rock()\n";}
 };
-
-int Counted::count = 0;
-
+    
 int main() {
-    Counted* c = new Counted;
-    void* p = c;
-    delete p;
+    vector<Rock> byValue;
+    Rock r1, r2, r3;
+    byValue.push_back(r1);
+    byValue.push_back(r2);
+    byValue.push_back(r3);
+    cout << "byValue populated\n\n";
+    
+    vector<Rock*> byPtr;
+    byPtr.push_back(&r1);
+    byPtr.push_back(&r2);
+    byPtr.push_back(&r3);
+    cout << "byPtr populated\n\n";
 }
