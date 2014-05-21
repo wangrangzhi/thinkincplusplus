@@ -1,33 +1,37 @@
 #include <iostream>
-#include <vector>
 using namespace std;
 
-class Rock {
+class Base {
 public:
-    Rock() {
-        cout << "Rock()\n";
+    virtual ~Base(){}
+    virtual Base* clone() const {
+        return new Base(*this);
     }
-    Rock(const Rock&) {
-        cout << "Rock(const Rock&)\n";
+    virtual void f() {
+        cout << "Base::f()\n";
     }
-    Rock& operator=(const Rock&) {
-        cout << "Rock()\n";
-        return *this;
-    }
-    ~Rock() {cout << "~Rock()\n";}
 };
-    
+
+class Derived : public Base {
+public:
+    virtual Derived* clone() const {
+        return new Derived(*this);
+    }
+    virtual void f() {
+        cout << "Derived::f()\n";
+    }
+};
+
+void invoke_f_and_die(Derived* d) {
+    d->f();
+    delete d;
+}
+
 int main() {
-    vector<Rock> byValue;
-    Rock r1, r2, r3;
-    byValue.push_back(r1);
-    byValue.push_back(r2);
-    byValue.push_back(r3);
-    cout << "byValue populated\n\n";
+    Derived d;
+    Base* d2 = d.clone();
+    d2->f();
+    delete d2;
     
-    vector<Rock*> byPtr;
-    byPtr.push_back(&r1);
-    byPtr.push_back(&r2);
-    byPtr.push_back(&r3);
-    cout << "byPtr populated\n\n";
+    invoke_f_and_die(d.clone());
 }
