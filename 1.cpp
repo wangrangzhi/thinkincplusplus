@@ -1,37 +1,64 @@
 #include <iostream>
 using namespace std;
 
-class Base {
+class Dog {
 public:
-    virtual ~Base(){}
-    virtual Base* clone() const {
-        return new Base(*this);
+  int run() const { 
+    cout << "run\n";  
+    return 0; 
+  }
+  int eat(int i) const { 
+     cout << "eat\n";  
+     return i; 
+  }
+  int sleep(int i, int j) const { 
+    cout << "ZZZ\n"; 
+    return i+j; 
+  }
+  typedef int (Dog::*PMF0)() const;
+  typedef int (Dog::*PMF1)(int) const;
+  typedef int (Dog::*PMF2)(int, int) const;
+  // operator->* must return an object 
+  // that has an operator():
+  template<typename PMF>
+  class FunctionObject {
+    Dog* ptr;
+    PMF pmem;
+  public:
+    // Save the object pointer and member pointer
+    FunctionObject(Dog* wp, PMF pmf) 
+      : ptr(wp), pmem(pmf) { 
+      cout << "FunctionObject constructor\n";
     }
-    virtual void f() {
-        cout << "Base::f()\n";
+    // Make the call using the object pointer
+    // and member pointer
+    int operator()() const {
+      cout << "FunctionObject::operator()\n";
+      return (ptr->*pmem)(); // Make the call
     }
+    int operator()(int i) const {
+      cout << "FunctionObject::operator(int)\n";
+      return (ptr->*pmem)(i); // Make the call
+    }
+    int operator()(int i, int j) const {
+      cout << "FunctionObject::operator(int, int)\n";
+      return (ptr->*pmem)(i, j); // Make the call
+    }
+  };
+  
+  template<typename PMF>
+  FunctionObject<PMF> operator->*(PMF pmf) { 
+    cout << "operator->*" << endl;
+    return FunctionObject<PMF>(this, pmf);
+  }
 };
-
-class Derived : public Base {
-public:
-    virtual Derived* clone() const {
-        return new Derived(*this);
-    }
-    virtual void f() {
-        cout << "Derived::f()\n";
-    }
-};
-
-void invoke_f_and_die(Derived* d) {
-    d->f();
-    delete d;
-}
-
+ 
 int main() {
-    Derived d;
-    Base* d2 = d.clone();
-    d2->f();
-    delete d2;
-    
-    invoke_f_and_die(d.clone());
+  Dog w;
+  Dog::PMF0 pmf0 = &Dog::run;
+  cout << (w->*pmf0)() << endl;
+  Dog::PMF1 pmf1 = &Dog::eat;
+  cout << (w->*pmf1)(2) << endl;
+  Dog::PMF2 pmf2 = &Dog::sleep;
+  cout << (w->*pmf2)(3, 4) << endl;
 }
